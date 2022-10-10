@@ -39,8 +39,9 @@ async fn main() -> Result<(), reqwest::Error> {
     let mut by_points = HashMap::new();
     let mut by_position = HashMap::new();
     let mut rank_vec = Vec::new();
+    let mut points_on_bech_counter = 0;
 
-    for player in players.as_array().into_iter() {
+    for player in players.as_array() {
         for x in player {
             let team_id = x.get("entry").unwrap().as_i64().unwrap();
             let previous_pos = x.get("last_rank").unwrap().as_i64().unwrap();
@@ -60,7 +61,7 @@ async fn main() -> Result<(), reqwest::Error> {
             let events = json.get("current").unwrap();
 
             for event in events.as_array() {
-                for ev in event {
+                for (ind, ev) in event.iter().enumerate() {
                     let in_bank = ev.get("bank").unwrap().as_f64().unwrap();
                     let event_transfers = ev.get("event_transfers").unwrap().as_i64().unwrap();
                     let event_transfers_cost =
@@ -74,7 +75,10 @@ async fn main() -> Result<(), reqwest::Error> {
                     let value = ev.get("value").unwrap().as_f64().unwrap();
 
                     rank_vec.push(points as i32);
-                    println!("^^^^{}****{}***{}", event_transfers, spiller, in_bank)
+                    println!(
+                        "^^^^{}****{}***{} INDEX {}",
+                        event_transfers, spiller, points_on_bench, ind
+                    )
                 }
             }
 
