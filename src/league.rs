@@ -1,4 +1,6 @@
-  
+use plotters::prelude::*;
+use serde::{Deserialize, Serialize};
+
 pub async fn get_league_data() -> Result<(), String> {
     // Getting League info from API
       let league = reqwest::Client::new()
