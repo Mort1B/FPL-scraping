@@ -52,7 +52,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         sheet1
             .write_string(
                 i as u32 + 1,
-                1,
+                0,
                 curr.points_on_bench.to_string().as_str(),
                 Some(&format1),
             )
