@@ -50,10 +50,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     for (i, curr) in player_root.current.iter().enumerate() {
         pointsvec.push(curr.points_on_bench as i32);
         sheet1
-            .write_string(
+            .write_number(
                 i as u32 + 1,
                 0,
-                curr.points_on_bench.to_string().as_str(),
+                curr.points_on_bench.as_f64(),
                 Some(&format1),
             )
             .unwrap();
@@ -70,6 +70,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // inserting plotters image in excel and writing the .xlsx file
     sheet1.insert_image(2, 2, "plotters-net.png").unwrap();
     workbook.close().unwrap();
+
+    league::get_league_data().await.unwrap();
 
     Ok(())
 }
