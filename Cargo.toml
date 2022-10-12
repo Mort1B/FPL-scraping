@@ -6,9 +6,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rocket = "0.4"
-rocket_codegen = "0.4"
-http = "0.2"
 reqwest = { version = "0.11", features = ["blocking", "json"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
@@ -16,5 +13,5 @@ tokio = { version = "1", features = ["full"] }
 csv = "1.1"
 itertools = "0.10.5"
 plotters = "0.3.1"
-yew = "0.19.3"
 argparse-rs = "0.1"
+xlsxwriter = "0.4.0"
