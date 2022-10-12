@@ -1,2 +1,2 @@
-pub mod leaguedata;
+pub mod player;
 pub mod playerdata;

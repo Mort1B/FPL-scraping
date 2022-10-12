@@ -1,6 +1,6 @@
 use xlsxwriter::*;
 
-use crate::data;
+use super::leaguedata;
 
 pub async fn get_league_data() -> Result<(), String> {
     // Getting League info from API
@@ -22,7 +22,7 @@ pub async fn get_league_data() -> Result<(), String> {
     sheet2.write_string(0, 4, "Points rnd", None).unwrap();
 
     // Using struct data to selecting and printing to excel
-    let standings_root = serde_json::from_str::<data::leaguedata::Root>(&league).unwrap();
+    let standings_root = serde_json::from_str::<leaguedata::Root>(&league).unwrap();
     for (i, res) in standings_root.standings.results.iter().enumerate() {
         sheet2
             .write_string(
