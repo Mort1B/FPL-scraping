@@ -13,6 +13,7 @@ pub async fn get_league_data() -> Result<(), String> {
         .await
         .unwrap();
 
+    //creating excel file
     let workbook = Workbook::new("test2.xlsx");
     let format_string = workbook.add_format().set_align(FormatAlignment::Justify);
     let mut sheet2 = workbook.add_worksheet(None).unwrap();
@@ -20,8 +21,8 @@ pub async fn get_league_data() -> Result<(), String> {
     sheet2.write_string(0, 2, "Posision cng", None).unwrap();
     sheet2.write_string(0, 4, "Points rnd", None).unwrap();
 
+    // Using struct data to selecting and printing to excel
     let standings_root = serde_json::from_str::<data::leaguedata::Root>(&league).unwrap();
-
     for (i, res) in standings_root.standings.results.iter().enumerate() {
         sheet2
             .write_string(
