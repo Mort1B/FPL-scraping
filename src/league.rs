@@ -33,14 +33,5 @@ pub async fn get_league_data() -> Result<(), String> {
     sheet1.write_string(2, 1, &news[2], None).unwrap();
     sheet1.write_string(3, 1, &news[3], None).unwrap();
 
-    // // SORTED BY POINTS WITH PLAYER
-    // for key in by_points.keys().sorted().rev() {
-    //     println!("Poeng: {:?} -> {}", key, by_points[key])
-    // }
-    // // SORTED BY CHANGE IN LEAGUE POSITION WITH PLAYER
-    // for key in by_position.keys().sorted().rev() {
-    //     println!("Endring: {} -> {}", key, by_position[key])
-    // }
-
     Ok(())
 }
