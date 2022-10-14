@@ -8,9 +8,22 @@ use xlsxwriter::*;
 pub async fn get_player_data() -> Result<(), Box<dyn Error + Send + Sync>> {
     // xlsxwriter, printing .png chart instead of charing in excel
     let workbook = Workbook::new("test1.xlsx");
-    let format1 = workbook.add_format().set_font_color(FormatColor::Blue);
     let mut sheet1 = workbook.add_worksheet(None)?;
-    sheet1.write_string(0, 0, "Points on Bench", Some(&format1))?;
+    let mut sheet2 = workbook.add_worksheet(None)?;
+    let mut sheet3 = workbook.add_worksheet(None)?;
+    let mut sheet4 = workbook.add_worksheet(None)?;
+    let mut sheet5 = workbook.add_worksheet(None)?;
+    let mut sheet6 = workbook.add_worksheet(None)?;
+    let mut sheet7 = workbook.add_worksheet(None)?;
+    let mut sheet8 = workbook.add_worksheet(None)?;
+    sheet1.write_string(0, 0, "points_vec", None)?;
+    sheet2.write_string(0, 0, "rank_vec", None)?;
+    sheet3.write_string(0, 0, "overall_rank_vec", None)?;
+    sheet4.write_string(0, 0, "bank_vec", None)?;
+    sheet5.write_string(0, 0, "team_value_vec", None)?;
+    sheet6.write_string(0, 0, "event_transfers_vec", None)?;
+    sheet7.write_string(0, 0, "event_transfer_cost_vec", None)?;
+    sheet8.write_string(0, 0, "Points on Bench", None)?;
 
     // Base URL for player data
     let team_id = 657266;
@@ -47,12 +60,14 @@ pub async fn get_player_data() -> Result<(), Box<dyn Error + Send + Sync>> {
         event_transfer_cost_vec.push(curr.event_transfers_cost as i32);
         points_on_bench_vec.push(curr.points_on_bench as i32);
 
-        sheet1.write_number(
-            i as u32 + 1,
-            0,
-            curr.points_on_bench.as_f64(),
-            Some(&format1),
-        )?;
+        sheet1.write_number(i as u32 + 1, 0, curr.points.as_f64(), None)?;
+        sheet2.write_number(i as u32 + 1, 0, curr.rank.as_f64(), None)?;
+        sheet3.write_number(i as u32 + 1, 0, curr.overall_rank.as_f64(), None)?;
+        sheet4.write_number(i as u32 + 1, 0, curr.bank.as_f64(), None)?;
+        sheet5.write_number(i as u32 + 1, 0, curr.value.as_f64(), None)?;
+        sheet6.write_number(i as u32 + 1, 0, curr.event_transfers.as_f64(), None)?;
+        sheet7.write_number(i as u32 + 1, 0, curr.event_transfers_cost.as_f64(), None)?;
+        sheet8.write_number(i as u32 + 1, 0, curr.points_on_bench.as_f64(), None)?;
     }
 
     // DRAWING CHARTS IN THIS REGION
@@ -82,7 +97,7 @@ pub async fn get_player_data() -> Result<(), Box<dyn Error + Send + Sync>> {
         event_transfers_vec,
     )?;
     draw_chart(
-        "tranfer_cost.png",
+        "transfer_cost.png",
         "transfer cost",
         0..40,
         0..20,
@@ -97,7 +112,14 @@ pub async fn get_player_data() -> Result<(), Box<dyn Error + Send + Sync>> {
     )?;
 
     // inserting plotters image in excel and writing the .xlsx file
-    sheet1.insert_image(2, 2, "points_on_bench.png")?;
+    sheet1.insert_image(2, 2, "points.png")?;
+    sheet2.insert_image(2, 2, "gw_rank.png")?;
+    sheet3.insert_image(2, 2, "overall_rank.png")?;
+    sheet4.insert_image(2, 2, "bank.png")?;
+    sheet5.insert_image(2, 2, "team_value.png")?;
+    sheet6.insert_image(2, 2, "event_transfers.png")?;
+    sheet7.insert_image(2, 2, "transfer_cost.png")?;
+    sheet8.insert_image(2, 2, "points_on_bench.png")?;
     workbook.close()?;
 
     Ok(())
@@ -134,6 +156,11 @@ fn draw_chart(
 }
 
 // HOW TO DO THIS???
-fn insert_excel() -> Result<(), Box<dyn Error + Send + Sync>> {
+fn insert_into_excel(workbook: &str) -> Result<(), Box<dyn Error + Send + Sync>> {
+    //return vec of sheets and insert into each sheet?
+    // let mut sheets =
+    // for i in 0..=9 {
+    //     // sheetname = i
+    // }
     Ok(())
 }
