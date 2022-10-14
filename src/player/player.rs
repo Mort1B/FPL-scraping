@@ -1,22 +1,9 @@
+use super::playerdata;
+use core::ops::Range;
 use plotters::prelude::*;
 use xlsxwriter::*;
 
-use super::playerdata;
-
 pub async fn get_player_data() -> Result<(), String> {
-    //Chart setup, printing image
-    let root = BitMapBackend::new("plotters-net.png", (640, 480)).into_drawing_area();
-    root.fill(&WHITE).unwrap();
-
-    let mut ctx = ChartBuilder::on(&root)
-        .set_label_area_size(LabelAreaPosition::Left, 40)
-        .set_label_area_size(LabelAreaPosition::Bottom, 40)
-        .caption("Points on bench", ("sans-serif", 40))
-        .build_cartesian_2d(0..40, 0..30)
-        .unwrap();
-
-    ctx.configure_mesh().draw().unwrap();
-
     // xlsxwriter, printing .png chart instead of charing in excel
     let workbook = Workbook::new("test1.xlsx");
     let format1 = workbook.add_format().set_font_color(FormatColor::Blue);
@@ -57,17 +44,41 @@ pub async fn get_player_data() -> Result<(), String> {
             .unwrap();
     }
 
-    //Drawing to the png
-    ctx.draw_series(LineSeries::new(
-        (0..).zip(pointsvec[..].iter()).map(|(idx, y)| (idx, *y)),
-        &BLUE,
-    ))
-    .unwrap();
-    root.present().unwrap();
+    draw_chart("image.png", 0..40, 0..50, pointsvec).unwrap();
 
     // inserting plotters image in excel and writing the .xlsx file
     sheet1.insert_image(2, 2, "plotters-net.png").unwrap();
     workbook.close().unwrap();
+
+    Ok(())
+}
+
+fn draw_chart(
+    path: &str,
+    x_spec: Range<i32>,
+    y_spec: Range<i32>,
+    data: Vec<i32>,
+) -> Result<(), String> {
+    //Chart setup, printing image
+    let root = BitMapBackend::new(path, (640, 480)).into_drawing_area();
+    root.fill(&WHITE).unwrap();
+
+    let mut ctx = ChartBuilder::on(&root)
+        .set_label_area_size(LabelAreaPosition::Left, 40)
+        .set_label_area_size(LabelAreaPosition::Bottom, 40)
+        .caption("Points on bench", ("sans-serif", 40))
+        .build_cartesian_2d(x_spec, y_spec)
+        .unwrap();
+
+    ctx.configure_mesh().draw().unwrap();
+
+    //Drawing to the png
+    ctx.draw_series(LineSeries::new(
+        (0..).zip(data[..].iter()).map(|(idx, y)| (idx, *y)),
+        &BLUE,
+    ))
+    .unwrap();
+    root.present().unwrap();
 
     Ok(())
 }
