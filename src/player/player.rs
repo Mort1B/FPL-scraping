@@ -4,6 +4,7 @@ use plotters::prelude::*;
 use std::error::Error;
 use xlsxwriter::*;
 
+// FIX writing to excel function -> Fix league -> Get everything into same excel -> refactor
 pub async fn get_player_data() -> Result<(), Box<dyn Error + Send + Sync>> {
     // xlsxwriter, printing .png chart instead of charing in excel
     let workbook = Workbook::new("test1.xlsx");
