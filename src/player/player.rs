@@ -5,8 +5,9 @@ use std::error::Error;
 use xlsxwriter::*;
 
 // FIX writing to excel function -> Fix league -> Get everything into same excel -> refactor
+// Get data for all players and print graphs for everyone on each page -> insert ID's from all players or take them from league? then loop over the program with all ID's
 pub async fn get_player_data() -> Result<(), Box<dyn Error + Send + Sync>> {
-    // xlsxwriter, printing .png chart instead of charing in excel
+    // Creating workbook and sheets with strings
     let workbook = Workbook::new("test1.xlsx");
     let mut sheet1 = workbook.add_worksheet(None)?;
     let mut sheet2 = workbook.add_worksheet(None)?;
