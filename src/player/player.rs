@@ -8,23 +8,21 @@ use xlsxwriter::*;
 // Get data for all players and print graphs for everyone on each page -> insert ID's from all players or take them from league? then loop over the program with all ID's
 pub async fn get_player_data() -> Result<(), Box<dyn Error + Send + Sync>> {
     // Creating workbook and sheets with strings
-    let workbook = Workbook::new("test1.xlsx");
-    let mut sheet1 = workbook.add_worksheet(None)?;
-    let mut sheet2 = workbook.add_worksheet(None)?;
-    let mut sheet3 = workbook.add_worksheet(None)?;
-    let mut sheet4 = workbook.add_worksheet(None)?;
-    let mut sheet5 = workbook.add_worksheet(None)?;
-    let mut sheet6 = workbook.add_worksheet(None)?;
-    let mut sheet7 = workbook.add_worksheet(None)?;
-    let mut sheet8 = workbook.add_worksheet(None)?;
-    sheet1.write_string(0, 0, "points_vec", None)?;
-    sheet2.write_string(0, 0, "rank_vec", None)?;
-    sheet3.write_string(0, 0, "overall_rank_vec", None)?;
-    sheet4.write_string(0, 0, "bank_vec", None)?;
-    sheet5.write_string(0, 0, "team_value_vec", None)?;
-    sheet6.write_string(0, 0, "event_transfers_vec", None)?;
-    sheet7.write_string(0, 0, "event_transfer_cost_vec", None)?;
-    sheet8.write_string(0, 0, "Points on Bench", None)?;
+    let workbook = Workbook::new("player_data.xlsx");
+    let mut sheets = Vec::new();
+    let sheet_names = [
+        "points_vec",
+        "rank_vec",
+        "overall_rank_vec",
+        "bank_vec",
+        "team_value_vec",
+        "event_transfers_vec",
+        "event_transfer_cost_vec",
+        "Points on Bench",
+    ];
+    for name in &sheet_names {
+        sheets.push(workbook.add_worksheet(Some(name))?);
+    }
 
     // Base URL for player data
     let team_id = 657266;
@@ -39,88 +37,94 @@ pub async fn get_player_data() -> Result<(), Box<dyn Error + Send + Sync>> {
         .await?;
 
     // Data storage
-    let mut points_vec = Vec::new();
-    let mut rank_vec = Vec::new();
-    let mut overall_rank_vec = Vec::new();
-    let mut bank_vec = Vec::new();
-    let mut team_value_vec = Vec::new();
-    let mut event_transfers_vec = Vec::new();
-    let mut event_transfer_cost_vec = Vec::new();
-    let mut points_on_bench_vec = Vec::new();
+    let mut data = Vec::new();
+    for _ in 0..sheet_names.len() {
+        data.push(Vec::new());
+    }
 
     // Using Deserialized structs to select data from API and loop through
     //to set data and write to excel file
     let player_root = serde_json::from_str::<playerdata::Root>(&player_history)?;
     for (i, curr) in player_root.current.iter().enumerate() {
-        points_vec.push(curr.points as i32);
-        rank_vec.push(curr.rank as i32);
-        overall_rank_vec.push(curr.overall_rank as i32);
-        bank_vec.push(curr.bank as i32);
-        team_value_vec.push(curr.value as i32);
-        event_transfers_vec.push(curr.event_transfers as i32);
-        event_transfer_cost_vec.push(curr.event_transfers_cost as i32);
-        points_on_bench_vec.push(curr.points_on_bench as i32);
+        data[0].push(curr.points as i32);
+        data[1].push(curr.rank as i32);
+        data[2].push(curr.overall_rank as i32);
+        data[3].push(curr.bank as i32);
+        data[4].push(curr.value as i32);
+        data[5].push(curr.event_transfers as i32);
+        data[6].push(curr.event_transfers_cost as i32);
+        data[7].push(curr.points_on_bench as i32);
 
-        sheet1.write_number(i as u32 + 1, 0, curr.points.as_f64(), None)?;
-        sheet2.write_number(i as u32 + 1, 0, curr.rank.as_f64(), None)?;
-        sheet3.write_number(i as u32 + 1, 0, curr.overall_rank.as_f64(), None)?;
-        sheet4.write_number(i as u32 + 1, 0, curr.bank.as_f64(), None)?;
-        sheet5.write_number(i as u32 + 1, 0, curr.value.as_f64(), None)?;
-        sheet6.write_number(i as u32 + 1, 0, curr.event_transfers.as_f64(), None)?;
-        sheet7.write_number(i as u32 + 1, 0, curr.event_transfers_cost.as_f64(), None)?;
-        sheet8.write_number(i as u32 + 1, 0, curr.points_on_bench.as_f64(), None)?;
+        for (j, sheet) in sheets.iter_mut().enumerate() {
+            sheet.write_number(i as u32 + 1, 0, data[j][i].into(), None)?;
+        }
     }
 
     // DRAWING CHARTS IN THIS REGION
 
-    draw_chart("points.png", "points", 0..40, 0..150, points_vec)?;
-    draw_chart("gw_rank.png", "GW rank", 0..40, 0..10000000, rank_vec)?;
+    draw_chart("points.png", "points", 0..40, 0..150, data[0].clone())?;
+    draw_chart(
+        "gw_rank.png",
+        "GW rank",
+        0..40,
+        0..10000000,
+        data[1].clone(),
+    )?;
     draw_chart(
         "overall_rank.png",
         "overall rank",
         0..40,
         0..8000000,
-        overall_rank_vec,
+        data[2].clone(),
     )?;
-    draw_chart("bank.png", "bank", 0..40, 0..50, bank_vec)?;
+    draw_chart("bank.png", "bank", 0..40, 0..50, data[3].clone())?;
     draw_chart(
         "team_value.png",
         "team_value",
         0..40,
         900..1100,
-        team_value_vec,
+        data[4].clone(),
     )?;
     draw_chart(
         "event_transfers.png",
         "event_transfers",
         0..40,
         0..10,
-        event_transfers_vec,
+        data[5].clone(),
     )?;
     draw_chart(
         "transfer_cost.png",
         "transfer cost",
         0..40,
         0..20,
-        event_transfer_cost_vec,
+        data[6].clone(),
     )?;
     draw_chart(
         "points_on_bench.png",
         "points on bench",
         0..40,
         0..25,
-        points_on_bench_vec,
+        data[7].clone(),
     )?;
 
     // inserting plotters image in excel and writing the .xlsx file
-    sheet1.insert_image(2, 2, "points.png")?;
-    sheet2.insert_image(2, 2, "gw_rank.png")?;
-    sheet3.insert_image(2, 2, "overall_rank.png")?;
-    sheet4.insert_image(2, 2, "bank.png")?;
-    sheet5.insert_image(2, 2, "team_value.png")?;
-    sheet6.insert_image(2, 2, "event_transfers.png")?;
-    sheet7.insert_image(2, 2, "transfer_cost.png")?;
-    sheet8.insert_image(2, 2, "points_on_bench.png")?;
+    sheets[0].insert_image(0, 1, "points.png")?;
+    sheets[1].insert_image(0, 1, "gw_rank.png")?;
+    sheets[2].insert_image(0, 1, "overall_rank.png")?;
+    sheets[3].insert_image(0, 1, "bank.png")?;
+    sheets[4].insert_image(0, 1, "team_value.png")?;
+    sheets[5].insert_image(0, 1, "event_transfers.png")?;
+    sheets[6].insert_image(0, 1, "transfer_cost.png")?;
+    sheets[7].insert_image(0, 1, "points_on_bench.png")?;
+
+    // sheet1.insert_image(2, 2, "points.png")?;
+    // sheet2.insert_image(2, 2, "gw_rank.png")?;
+    // sheet3.insert_image(2, 2, "overall_rank.png")?;
+    // sheet4.insert_image(2, 2, "bank.png")?;
+    // sheet5.insert_image(2, 2, "team_value.png")?;
+    // sheet6.insert_image(2, 2, "event_transfers.png")?;
+    // sheet7.insert_image(2, 2, "transfer_cost.png")?;
+    // sheet8.insert_image(2, 2, "points_on_bench.png")?;
     workbook.close()?;
 
     Ok(())
