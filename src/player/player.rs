@@ -117,14 +117,6 @@ pub async fn get_player_data() -> Result<(), Box<dyn Error + Send + Sync>> {
     sheets[6].insert_image(0, 1, "transfer_cost.png")?;
     sheets[7].insert_image(0, 1, "points_on_bench.png")?;
 
-    // sheet1.insert_image(2, 2, "points.png")?;
-    // sheet2.insert_image(2, 2, "gw_rank.png")?;
-    // sheet3.insert_image(2, 2, "overall_rank.png")?;
-    // sheet4.insert_image(2, 2, "bank.png")?;
-    // sheet5.insert_image(2, 2, "team_value.png")?;
-    // sheet6.insert_image(2, 2, "event_transfers.png")?;
-    // sheet7.insert_image(2, 2, "transfer_cost.png")?;
-    // sheet8.insert_image(2, 2, "points_on_bench.png")?;
     workbook.close()?;
 
     Ok(())
